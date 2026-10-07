@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pusat Komando Kota Arunika</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen antialiased">
+
+<header class="sticky top-0 z-40 border-b" style="background: color-mix(in srgb, var(--bg) 90%, transparent); border-color: var(--line); backdrop-filter: blur(10px); padding-top: env(safe-area-inset-top, 0px);">
+  <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
+    <svg width="30" height="34" viewBox="0 0 30 34" aria-hidden="true">
+      <path d="M15 1 28 6v10c0 8-5.5 14-13 17C7.500 30 2 24 2 16V6z" fill="var(--blue)"/>
+      <path d="m15 9 2.200 4.700 5.100.7-3.700 3.600.9 5.100L15 20.600 10.500 23l.9-5.100-3.700-3.600 5.100-.7z" fill="var(--bg)"/>
+    </svg>
+    <div class="leading-tight">
+      <div class="display text-xl font-bold">Pusat Komando Arunika</div>
+      <div class="text-xs" style="color: var(--muted)">Data simulasi · diperbarui 5 menit lalu</div>
+    </div>
+    <div class="ml-auto flex items-center gap-3">
+      <span class="hidden items-center gap-2 rounded-full px-3 py-1.5 text-sm sm:inline-flex" style="background: var(--surface); box-shadow: inset 0 0 0 1px var(--line)">
+        <span class="h-2 w-2 rounded-full" style="background: var(--green)"></span> Darurat: 110
+      </span>
+      <button id="themeBtn" class="rounded-full px-3.5 py-1.5 text-sm font-semibold" style="background: var(--ink); color: var(--bg)">Tema</button>
+    </div>
+  </div>
+</header>
+
+<main class="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6">
+
+  <section class="mb-8">
+    <h1 class="display text-4xl font-bold sm:text-5xl">Keamanan kota bulan ini</h1>
+    <p class="mt-2 max-w-2xl text-[15px]" style="color: var(--muted)">Arahkan kursor atau ketuk wilayah, jenis sindikat, dan buronan. Semuanya saling terhubung: pilih satu, yang berkaitan ikut menyala.</p>
+
+    <dl class="mt-6 grid grid-cols-2 overflow-hidden rounded-2xl lg:grid-cols-4" style="background: var(--surface); box-shadow: inset 0 0 0 1px var(--line)">
+      <div class="p-5">
+        <dt class="text-sm" style="color: var(--muted)">Kasus tercatat</dt>
+        <dd id="kpiCases" class="display mt-1 text-4xl font-bold">1.240</dd>
+        <dd class="mt-1 text-sm" style="color: var(--green)">Turun 6% dari bulan lalu</dd>
+      </div>
+      <div class="border-l p-5" style="border-color: var(--line)">
+        <dt class="text-sm" style="color: var(--muted)">Kasus terselesaikan</dt>
+        <dd class="display mt-1 text-4xl font-bold">68<span class="text-2xl font-semibold" style="color: var(--muted)"> %</span></dd>
+        <dd class="mt-1 text-sm" style="color: var(--green)">Naik 4 poin</dd>
+      </div>
+      <div class="border-t p-5 lg:border-l lg:border-t-0" style="border-color: var(--line)">
+        <dt class="text-sm" style="color: var(--muted)">Anggota sindikat ditangkap</dt>
+        <dd id="kpiArrests" class="display mt-1 text-4xl font-bold">214</dd>
+        <dd class="mt-1 text-sm" style="color: var(--muted)">Dari 6 jenis sindikat</dd>
+      </div>
+      <div class="border-l border-t p-5 lg:border-t-0" style="border-color: var(--line)">
+        <dt class="text-sm" style="color: var(--muted)">Total hadiah buronan</dt>
+        <dd id="kpiBounty" class="display mt-1 text-4xl font-bold">Rp 2,1 M</dd>
+        <dd class="mt-1 text-sm" style="color: var(--brass)">6 buronan aktif</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- Peta -->
+  <section class="mb-8 rounded-3xl p-4 sm:p-6" style="background: var(--surface); box-shadow: inset 0 0 0 1px var(--line)">
+    <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 class="display text-3xl font-bold">Peta kriminalitas per wilayah</h2>
+        <p id="mapCaption" class="mt-0.5 min-h-[1.5rem] text-sm" style="color: var(--muted)"></p>
+      </div>
+      <div class="flex items-center gap-2 text-xs" style="color: var(--muted)">
+        <span>Porsi kasus kota</span>
+        <span class="h-2.5 w-24 rounded-full" style="background: linear-gradient(90deg, color-mix(in srgb, var(--siren) 15%, var(--surface-2)), color-mix(in srgb, var(--siren) 62%, var(--surface-2)))"></span>
+        <span>5% → 16%</span>
+      </div>
+    </div>
+    <div id="mapWrap" class="relative">
+      <div id="mapBox" class="overflow-hidden rounded-2xl" style="background: var(--surface-2);">
+        <svg id="map" class="block h-full w-full" role="group" aria-label="Peta heksagon wilayah kota"></svg>
+      </div>
+      <div id="holo" class="holo holo-float p-4" data-open="false" data-side="right" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- Sindikat -->
+  <section class="mb-8 rounded-3xl p-4 sm:p-6" style="background: var(--surface); box-shadow: inset 0 0 0 1px var(--line)">
+    <h2 class="display text-3xl font-bold">Penangkapan sindikat menurut jenis</h2>
+    <p class="mb-5 text-sm" style="color: var(--muted)">Persentase dari 214 orang yang ditangkap bulan ini.</p>
+    <div class="grid gap-5 lg:grid-cols-5">
+      <ul id="synList" class="space-y-1.5 lg:col-span-3"></ul>
+      <div id="synDetail" class="holo p-5 lg:col-span-2" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- Buronan -->
+  <section class="rounded-3xl p-4 sm:p-6" style="background: var(--surface); box-shadow: inset 0 0 0 1px var(--line)">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 class="display text-3xl font-bold">Buronan paling dicari</h2>
+        <p class="text-sm" style="color: var(--muted)">Semua nama dan kasus di halaman ini fiktif untuk contoh tampilan.</p>
+      </div>
+      <div class="inline-flex rounded-full p-1 text-sm" style="background: var(--surface-2)" role="group" aria-label="Urutkan buronan">
+        <button id="sortBounty" class="rounded-full px-3.5 py-1.5 font-semibold">Hadiah tertinggi</button>
+        <button id="sortDanger" class="rounded-full px-3.5 py-1.5 font-semibold">Paling berbahaya</button>
+      </div>
+    </div>
+    <div class="grid gap-5 lg:grid-cols-5">
+      <div id="wList" class="grid gap-3 sm:grid-cols-2 lg:col-span-3" style="perspective: 1000px"></div>
+      <div id="wDossier" class="holo p-5 lg:col-span-2" aria-live="polite"></div>
+    </div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
